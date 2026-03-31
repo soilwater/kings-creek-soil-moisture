@@ -123,7 +123,7 @@
       <h2>Network Location</h2>
       <p>
         All 16 stations are distributed across the Kings Creek watershed within the
-        Konza Prairie Biological Station. Click any marker for station details.
+        Konza Prairie Biological Station.
       </p>
       <div id="map"></div>
     </div>
@@ -170,7 +170,7 @@
       <h2>Repository Structure</h2>
       <p>
         All tabular data are CSV with hourly resolution. Raster data are GeoTIFF.
-        The watershed boundary is a clean GeoJSON (EPSG:4326, 2D) compatible with
+        The watershed boundary is a GeoJSON file (EPSG:4326, 2D) compatible with
         Google Earth Engine and standard mapping libraries.
       </p>
       <table class="data-table">
@@ -424,7 +424,7 @@
         hovermode: 'x unified'
       }, { responsive: true, displayModeBar: false });
 
-      setStatus(`Station ${station} · ${rows.length.toLocaleString()} hourly observations · source: soil_data/station_${station}_soil.csv`);
+      setStatus(`Station ${station} · source: soil_data/station_${station}_soil.csv`);
     }
 
     document.getElementById('station-select').addEventListener('change', render);
