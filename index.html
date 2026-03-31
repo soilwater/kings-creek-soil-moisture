@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kings Creek Soil Monitoring Network</title>
+  <title>Kings Creek Soil Moisture Network</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
   <style>
     :root {
@@ -20,19 +22,12 @@
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: var(--sans);
-      font-size: 15px;
-      line-height: 1.7;
-    }
+    body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.7; }
 
     /* NAV */
     nav {
-      position: sticky; top: 0; z-index: 100;
-      background: #fff;
-      border-bottom: 1px solid var(--rule);
+      position: sticky; top: 0; z-index: 1000;
+      background: #fff; border-bottom: 1px solid var(--rule);
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 2rem; height: 48px;
     }
@@ -41,23 +36,26 @@
     nav ul a { font-size: 0.8rem; font-weight: 500; text-decoration: none; color: var(--ink-2); }
     nav ul a:hover { color: var(--accent); }
 
-    /* LAYOUT */
-    .container { max-width: 780px; margin: 0 auto; padding: 0 2rem; }
+    .container { max-width: 820px; margin: 0 auto; padding: 0 2rem; }
 
     /* HERO */
-    header { border-bottom: 1px solid var(--rule); padding: 5rem 0 4rem; }
+    header { border-bottom: 1px solid var(--rule); padding: 4.5rem 0 3.5rem; }
     header .eyebrow { font-family: var(--mono); font-size: 0.68rem; color: var(--ink-3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; }
-    header h1 { font-size: 2.2rem; font-weight: 600; line-height: 1.2; margin-bottom: 1.25rem; }
-    header .lead { font-size: 1rem; color: var(--ink-2); font-weight: 300; max-width: 600px; margin-bottom: 2.5rem; }
+    header h1 { font-size: 2.1rem; font-weight: 600; line-height: 1.2; margin-bottom: 1.1rem; }
+    header .lead { font-size: 0.97rem; color: var(--ink-2); font-weight: 300; max-width: 600px; margin-bottom: 2.25rem; }
+
+    /* HERO PHOTO */
+    .hero-photo { width: 100%; max-height: 340px; object-fit: cover; object-position: center 40%; display: block; margin-bottom: 2.25rem; border: 1px solid var(--rule); }
+
     .stats-row { display: flex; gap: 2.5rem; flex-wrap: wrap; padding-top: 2rem; border-top: 1px solid var(--rule); }
-    .stat .num { font-size: 1.8rem; font-weight: 600; display: block; line-height: 1; }
+    .stat .num { font-size: 1.75rem; font-weight: 600; display: block; line-height: 1; }
     .stat .label { font-size: 0.72rem; color: var(--ink-3); display: block; margin-top: 0.2rem; }
 
     /* SECTIONS */
     section { padding: 4rem 0; border-bottom: 1px solid var(--rule); }
     section:last-of-type { border-bottom: none; }
     .section-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-3); margin-bottom: 1.5rem; }
-    h2 { font-size: 1.35rem; font-weight: 600; margin-bottom: 1.25rem; }
+    h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 1.2rem; }
     p { color: var(--ink-2); font-weight: 300; margin-bottom: 0.9rem; }
     p:last-child { margin-bottom: 0; }
     strong { font-weight: 500; color: var(--ink); }
@@ -65,10 +63,13 @@
     a:hover { text-decoration: underline; }
     code { font-family: var(--mono); font-size: 0.82em; background: var(--surface); padding: 0.1em 0.35em; border: 1px solid var(--rule); color: var(--ink); }
 
+    /* MAP */
+    #map { width: 100%; height: 420px; border: 1px solid var(--rule); margin-top: 2rem; }
+
     /* TABLE */
     .data-table { width: 100%; border-collapse: collapse; margin-top: 2rem; font-size: 0.85rem; }
     .data-table th { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; text-align: left; color: var(--ink-3); padding: 0.5rem 1.25rem 0.5rem 0; border-bottom: 1px solid var(--rule); }
-    .data-table td { padding: 0.7rem 1.25rem 0.7rem 0; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; font-weight: 300; }
+    .data-table td { padding: 0.65rem 1.25rem 0.65rem 0; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; font-weight: 300; }
     .data-table td:first-child { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); white-space: nowrap; font-weight: 400; }
     .data-table tr:last-child td { border-bottom: none; }
 
@@ -79,55 +80,99 @@
     select { font-family: var(--sans); font-size: 0.8rem; background: var(--surface); border: 1px solid var(--rule); color: var(--ink); padding: 0.35rem 0.65rem; cursor: pointer; outline: none; }
     select:focus { border-color: var(--accent); }
     .plot-container { border: 1px solid var(--rule); }
-    .plot-note { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-3); margin-top: 0.75rem; }
+    .plot-status { font-family: var(--mono); font-size: 0.65rem; color: var(--ink-3); margin-top: 0.6rem; min-height: 1rem; }
 
     /* FOOTER */
     footer { border-top: 1px solid var(--rule); padding: 2rem 0; }
     footer p { font-size: 0.75rem; color: var(--ink-3); }
+
+    /* Leaflet popup override */
+    .leaflet-popup-content { font-family: var(--sans); font-size: 0.82rem; line-height: 1.5; }
+    .leaflet-popup-content strong { font-weight: 600; }
+    .popup-mono { font-family: var(--mono); font-size: 0.75rem; color: var(--ink-3); }
   </style>
 </head>
 <body>
 
   <nav>
-    <span class="wordmark">Kings Creek · Konza Prairie</span>
+    <span class="wordmark">Kings Creek Soil Moisture Network</span>
     <ul>
       <li><a href="#network">Network</a></li>
+      <li><a href="#map-section">Map</a></li>
       <li><a href="#data">Data</a></li>
       <li><a href="#explore">Explore</a></li>
-      <li><a href="#access">Access</a></li>
     </ul>
   </nav>
 
+  <!-- HERO -->
   <header>
     <div class="container">
-      <div class="eyebrow">Soil &amp; Atmosphere Monitoring · Kansas, USA</div>
-      <h1>Kings Creek Watershed Dataset</h1>
-      <p class="lead">A long-term, multi-depth soil monitoring network within the Konza Prairie Biological Station — recording soil moisture, temperature, and electrical conductivity at hourly resolution since July 2021.</p>
-      <div class="stats-row">
-        <div class="stat"><span class="num">16</span><span class="label">Stations</span></div>
-        <div class="stat"><span class="num">3</span><span class="label">Soil depths</span></div>
-        <div class="stat"><span class="num">4+</span><span class="label">Years active</span></div>
-        <div class="stat"><span class="num">~150</span><span class="label">NDVI images</span></div>
-      </div>
+      <div class="eyebrow">Konza Prairie Biological Station · Manhattan, Kansas</div>
+      <h1>Kings Creek Soil Moisture Network</h1>
+      <p class="lead">
+        A long-term, multi-depth soil monitoring network within the Kings Creek watershed at
+        the Konza Prairie Biological Station.
+      </p>
+      <img src="landing_1.jpg" alt="Monitoring station in Kings Creek watershed, Konza Prairie" class="hero-photo" />
     </div>
   </header>
 
-  <section id="network">
+  <!-- MAP -->
+  <section id="map-section">
     <div class="container">
-      <div class="section-label">01 — Network</div>
-      <h2>Instrumentation &amp; Design</h2>
-      <p>All 16 stations are equipped with <strong>Meter Teros 12</strong> sensors at 5, 20, and 40 cm depth, recording volumetric water content, soil temperature, and bulk electrical conductivity. Dataloggers are <strong>Meter ZL6</strong> units transmitting data hourly. The network became operational on <strong>July 1, 2021</strong> and continues to run today.</p>
-      <p>From July 2021 through October 2025, stations also recorded atmospheric variables. Thirteen stations used <strong>Atmos 14</strong> sensors (precipitation, air temperature, relative humidity); three stations had <strong>Atmos 41</strong> sensors which additionally provided solar radiation, wind speed, and wind direction. A reference file from the <strong>Kansas Mesonet Ashland Bottoms</strong> station is included in <code>atm_data/</code>.</p>
-      <p>Starting <strong>November 2025</strong>, all external atmospheric sensors were removed to simplify datalogger shielding during prescribed burns. Soil monitoring continues uninterrupted at all 16 stations. Internal logger temperature and atmospheric pressure (inside the enclosure) continue to be recorded.</p>
-      <p>Vegetation is monitored via <strong>Sentinel-2 NDVI</strong> at 10-m resolution (<code>COPERNICUS/S2_SR_HARMONIZED</code>), retaining only cloud-free dates. Streamflow is available from <strong>USGS gauge 06879650</strong> (Kings Creek near Manhattan, KS). Terrain rasters were derived from <code>USGS/3DEP/10m</code>.</p>
+      <h2>Network Location</h2>
+      <p>
+        All 16 stations are distributed across the Kings Creek watershed within the
+        Konza Prairie Biological Station. Click any marker for station details.
+      </p>
+      <div id="map"></div>
     </div>
   </section>
 
+  <!-- NETWORK -->
+  <section id="network">
+    <div class="container">
+      <h2>Instrumentation</h2>
+      <p>
+        All 16 stations are equipped with Meter Teros 12 sensors at 5, 20,
+        and 40 cm depth, recording volumetric water content, soil temperature, and bulk
+        electrical conductivity. Dataloggers are Meter ZL6 units transmitting
+        data hourly. The network became operational on July 1, 2021 and
+        continues to run today.
+      </p>
+      <p>
+        From July 2021 through November 2025, stations also recorded atmospheric variables.
+        Thirteen stations used <strong>Atmos 14 sensors (precipitation, air temperature,
+        relative humidity); three stations (3, 9, and 16) had Atmos 41 sensors which additionally
+        provided solar radiation, wind speed, and wind direction.
+      </p>
+      <p>
+        Starting November 2025, all external atmospheric sensors were removed
+        to simplify datalogger shielding during prescribed burns. Soil monitoring continues
+        uninterrupted at all 16 stations. Internal logger temperature and atmospheric pressure
+        (inside the enclosure) continue to be recorded. Weather data from the
+        Kansas Mesonet Ashland Bottoms station is available in
+        <code>mesonet_data/</code>.
+      </p>
+      <p>
+        Vegetation data is also provided through Sentinel-2 NDVI at 10-m resolution
+        (<code>COPERNICUS/S2_SR_HARMONIZED</code>), retaining only cloud-free dates.
+        Streamflow is available from USGS gauge 06879650 (Kings Creek near
+        Manhattan, KS). Terrain rasters were derived from <code>USGS/3DEP/10m</code>.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- DATA -->
   <section id="data">
     <div class="container">
-      <div class="section-label">02 — Data</div>
       <h2>Repository Structure</h2>
-      <p>All tabular data are CSV with hourly resolution. Raster data are GeoTIFF. The watershed boundary is a clean GeoJSON (EPSG:4326, 2D) compatible with Google Earth Engine and standard mapping libraries.</p>
+      <p>
+        All tabular data are CSV with hourly resolution. Raster data are GeoTIFF.
+        The watershed boundary is a clean GeoJSON (EPSG:4326, 2D) compatible with
+        Google Earth Engine and standard mapping libraries.
+      </p>
       <table class="data-table">
         <thead>
           <tr>
@@ -146,9 +191,15 @@
           </tr>
           <tr>
             <td>atm_data/</td>
-            <td>Hourly precipitation, air temperature, RH (all stations); solar radiation, wind speed &amp; direction (3 stations). Includes Kansas Mesonet Ashland Bottoms reference.</td>
+            <td>Hourly precipitation, air temperature, RH (all stations); solar radiation, wind speed &amp; direction (3 stations with Atmos 41)</td>
             <td>CSV</td>
             <td>Jul 2021 – Oct 2025</td>
+          </tr>
+          <tr>
+            <td>mesonet_data/</td>
+            <td>Kansas Mesonet reference stations. Currently includes Ashland Bottoms (hourly precipitation, air temperature, RH, wind speed &amp; direction, solar radiation)</td>
+            <td>CSV</td>
+            <td>Jul 2021 – present</td>
           </tr>
           <tr>
             <td>vegetation_data/</td>
@@ -188,7 +239,7 @@
           </tr>
           <tr>
             <td>stations_metadata.csv</td>
-            <td>Station name, coordinates, altitude, and watershed for all 16 stations</td>
+            <td>Station name, coordinates, altitude, watershed, and logger serial number</td>
             <td>CSV</td>
             <td>—</td>
           </tr>
@@ -203,18 +254,19 @@
     </div>
   </section>
 
+  <!-- EXPLORE -->
   <section id="explore">
     <div class="container">
-      <div class="section-label">03 — Explore</div>
       <h2>Data Preview</h2>
-      <p>Simulated seasonal traces for visual exploration. Download the repository for the full dataset.</p>
+      <p>Hourly soil data fetched directly from the repository. Select a station and variable to explore.</p>
+
       <div class="controls">
         <div class="control-group">
           <label for="station-select">Station</label>
           <select id="station-select">
             <script>
               for (let i = 1; i <= 16; i++)
-                document.write(`<option value="${i}">Station ${String(i).padStart(2,'0')}</option>`);
+                document.write(`<option value="${String(i).padStart(2,'0')}">Station ${String(i).padStart(2,'0')}</option>`);
             </script>
           </select>
         </div>
@@ -227,71 +279,158 @@
           </select>
         </div>
       </div>
-      <div class="plot-container">
-        <div id="plot" style="width:100%;height:360px;"></div>
-      </div>
-      <p class="plot-note">Simulated data for illustration only.</p>
-    </div>
-  </section>
 
-  <section id="access">
-    <div class="container">
-      <div class="section-label">04 — Access</div>
-      <h2>Get the Data</h2>
-      <p>The dataset is openly available on <a href="https://github.com/" target="_blank">GitHub</a>. The <code>raw_data/</code> folder (~500 MB) is not tracked in the repository — contact us if you need the original datalogger files.</p>
+      <div class="plot-container">
+        <div id="plot" style="width:100%;height:380px;"></div>
+      </div>
+      <p class="plot-status" id="plot-status">Loading data...</p>
     </div>
   </section>
 
   <footer>
     <div class="container">
-      <p>Kings Creek Watershed · Konza Prairie Biological Station · Manhattan, KS · Data available from July 2021</p>
+      <p style="margin: 0%;">Kings Creek Soil Moisture Network</p>
+      <p style="margin: 0%;">Soil Water Processes Lab, Department of Agronomy</p>
+      <p style="margin: 0%;">Konza Prairie Biological Station</p>
+      <p style="margin: 0%;">Kansas State University</p>
+      <p>Data available from July 2021 ·
+         <a href="https://github.com/soilwater/kings-creek-soil-moisture" target="_blank">GitHub</a>
+      </p>
     </div>
   </footer>
 
+  <!-- LEAFLET MAP -->
   <script>
-    const DEPTHS = ['5cm','20cm','40cm'];
-    const COLORS = {
-      vwc:  ['#1f6fab','#4da3d4','#a8d4ed'],
-      temp: ['#c0392b','#e07060','#f0b0a8'],
-      ec:   ['#27ae60','#5dbb7a','#a8ddb5']
-    };
-    const UNITS  = { vwc: 'm³/m³', temp: '°C', ec: 'dS/m' };
-    const RANGES = { vwc: [0.05,0.45], temp: [2,28], ec: [0.05,0.5] };
+    const stations = [
+      { name:"station_01", label:"Station 1",  lat:39.1016073, lon:-96.595585,  alt:336, watershed:"AL"   },
+      { name:"station_02", label:"Station 2",  lat:39.096921,  lon:-96.589913,  alt:340, watershed:"N1A"  },
+      { name:"station_03", label:"Station 3",  lat:39.0883712, lon:-96.5835133, alt:370, watershed:"N4D"  },
+      { name:"station_04", label:"Station 4",  lat:39.0850146, lon:-96.5718286, alt:412, watershed:"N1B"  },
+      { name:"station_05", label:"Station 5",  lat:39.0824648, lon:-96.5650263, alt:437, watershed:"N20B" },
+      { name:"station_06", label:"Station 6",  lat:39.0867287, lon:-96.5544627, alt:442, watershed:"K1B"  },
+      { name:"station_07", label:"Station 7",  lat:39.0927665, lon:-96.5740359, alt:408, watershed:"K1B"  },
+      { name:"station_08", label:"Station 8",  lat:39.0964761, lon:-96.5569449, alt:414, watershed:"K1B"  },
+      { name:"station_09", label:"Station 9",  lat:39.1002081, lon:-96.5624272, alt:415, watershed:"K2A"  },
+      { name:"station_10", label:"Station 10", lat:39.1021481, lon:-96.5790203, alt:359, watershed:"K1A"  },
+      { name:"station_11", label:"Station 11", lat:39.1068007, lon:-96.5711297, alt:413, watershed:"K20A" },
+      { name:"station_12", label:"Station 12", lat:39.1100191, lon:-96.589511,  alt:397, watershed:"K1A"  },
+      { name:"station_13", label:"Station 13", lat:39.0777066, lon:-96.5771592, alt:430, watershed:"N1B"  },
+      { name:"station_14", label:"Station 14", lat:39.077435,  lon:-96.589381,  alt:434, watershed:"N4D"  },
+      { name:"station_15", label:"Station 15", lat:39.081019,  lon:-96.597796,  alt:430, watershed:"N2B"  },
+      { name:"station_16", label:"Station 16", lat:39.090205,  lon:-96.5952546, alt:404, watershed:"N1A"  }
+    ];
 
-    function generateTrace(station, variable, depth) {
-      const n = 365 * 3, dates = [], vals = [];
-      const start = new Date('2021-07-01');
-      const [lo, hi] = RANGES[variable];
-      const mid = (lo+hi)/2, amp = (hi-lo)/2.5;
-      const seed = (station*7 + DEPTHS.indexOf(depth)*3) % 13;
-      for (let i = 0; i < n; i++) {
-        const d = new Date(start); d.setDate(d.getDate()+i);
-        dates.push(d.toISOString().slice(0,10));
-        const s = Math.sin((i/365)*2*Math.PI - Math.PI/2);
-        const noise = (Math.sin(i*0.37+seed) + Math.sin(i*0.13+seed*2))*0.06;
-        vals.push(+(mid + amp*0.6*s + noise).toFixed(3));
-      }
-      return { x:dates, y:vals, name:depth, type:'scatter', mode:'lines',
-               line:{ width:1.5, color:COLORS[variable][DEPTHS.indexOf(depth)] } };
+    const map = L.map('map').setView([39.092, -96.582], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 18
+    }).addTo(map);
+
+    // Load watershed boundary
+    fetch('https://raw.githubusercontent.com/soilwater/kings-creek-soil-moisture/refs/heads/main/kings_creek_boundary.geojson')
+      .then(r => r.json())
+      .then(geojson => {
+        L.geoJSON(geojson, {
+          style: { color: '#2a6496', weight: 2, fillOpacity: 0.06, fillColor: '#2a6496' }
+        }).addTo(map);
+      })
+      .catch(() => {}); // silently skip if not yet on GitHub
+
+    const markerStyle = { radius: 6, fillColor: '#2a6496', color: '#fff', weight: 1.5, opacity: 1, fillOpacity: 0.9 };
+
+    stations.forEach(s => {
+      const marker = L.circleMarker([s.lat, s.lon], markerStyle).addTo(map);
+      marker.bindPopup(`
+        <strong>${s.label}</strong><br>
+        <span class="popup-mono">Watershed: ${s.watershed}</span><br>
+        <span class="popup-mono">${s.lat.toFixed(5)}, ${s.lon.toFixed(5)}</span><br>
+        <span class="popup-mono">Altitude: ${s.alt} m</span>
+      `);
+    });
+  </script>
+
+  <!-- PLOTLY with real data -->
+  <script>
+    const BASE_URL = 'https://raw.githubusercontent.com/soilwater/kings-creek-soil-moisture/refs/heads/main/soil_data/';
+    const DEPTH_COLORS = ['#e05c2e', '#2a7db5', '#2e9e5b'];  // tomato, blue, green
+
+    const VARS = {
+      vwc:  { cols: ['vwc_5cm','vwc_20cm','vwc_40cm'],   unit: 'm³/m³', colors: DEPTH_COLORS },
+      temp: { cols: ['temp_5cm','temp_20cm','temp_40cm'],  unit: '°C',    colors: DEPTH_COLORS },
+      ec:   { cols: ['ec_5cm','ec_20cm','ec_40cm'],        unit: 'dS/m',  colors: DEPTH_COLORS }
+    };
+
+    let cache = {};
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      const headers = lines[0].split(',');
+      return lines.slice(1).map(line => {
+        const vals = line.split(',');
+        const row = {};
+        headers.forEach((h, i) => row[h.trim()] = vals[i] ? vals[i].trim() : '');
+        return row;
+      });
     }
 
-    function render() {
-      const station  = +document.getElementById('station-select').value;
+    function setStatus(msg) {
+      document.getElementById('plot-status').textContent = msg;
+    }
+
+    async function render() {
+      const station  = document.getElementById('station-select').value;
       const variable = document.getElementById('var-select').value;
-      Plotly.react('plot', DEPTHS.map(d => generateTrace(station, variable, d)), {
-        paper_bgcolor:'#fff', plot_bgcolor:'#fff',
-        font:{ family:'Inter,sans-serif', size:11, color:'#444' },
-        margin:{ t:20, r:20, b:50, l:60 },
-        xaxis:{ gridcolor:'#ebebeb', linecolor:'#e0e0e0' },
-        yaxis:{ gridcolor:'#ebebeb', linecolor:'#e0e0e0', title:UNITS[variable] },
-        legend:{ orientation:'h', y:-0.18 },
-        hovermode:'x unified'
-      }, { responsive:true, displayModeBar:false });
+      const { cols, unit, colors } = VARS[variable];
+      const url = `${BASE_URL}station_${station}_soil.csv`;
+
+      setStatus('Loading data...');
+
+      let rows;
+      if (cache[station]) {
+        rows = cache[station];
+      } else {
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error('not found');
+          const text = await resp.text();
+          rows = parseCSV(text);
+          cache[station] = rows;
+        } catch {
+          setStatus(`Could not load data for station ${station}. Check that the file exists in the repository.`);
+          Plotly.purge('plot');
+          return;
+        }
+      }
+
+      const timestamps = rows.map(r => r['timestamp_utc']);
+      const traces = cols.map((col, i) => ({
+        x: timestamps,
+        y: rows.map(r => r[col] === '' || r[col] === 'nan' ? null : +r[col]),
+        name: col.split('_').slice(1).join('_'),
+        type: 'scatter',
+        mode: 'lines',
+        line: { width: 1.2, color: colors[i] },
+        connectgaps: false
+      }));
+
+      Plotly.react('plot', traces, {
+        paper_bgcolor: '#fff', plot_bgcolor: '#fff',
+        font: { family: 'Inter, sans-serif', size: 11, color: '#444' },
+        margin: { t: 20, r: 20, b: 50, l: 60 },
+        xaxis: { gridcolor: '#ebebeb', linecolor: '#e0e0e0' },
+        yaxis: { gridcolor: '#ebebeb', linecolor: '#e0e0e0', title: unit },
+        legend: { orientation: 'h', y: -0.18 },
+        hovermode: 'x unified'
+      }, { responsive: true, displayModeBar: false });
+
+      setStatus(`Station ${station} · ${rows.length.toLocaleString()} hourly observations · source: soil_data/station_${station}_soil.csv`);
     }
 
     document.getElementById('station-select').addEventListener('change', render);
     document.getElementById('var-select').addEventListener('change', render);
     render();
   </script>
+
 </body>
 </html>
