@@ -32,17 +32,17 @@ Atmospheric sensors (rain gauges and external sensors) were removed from all sta
 
 ```
 .
-├── metadta/stations.csv           # Coordinates, elevation, and IDs for all 16 stations
+├── metadta/stations.csv                     # Coordinates, elevation, and IDs for all 16 stations
 ├── metadata/kings_creek_boundary.geojson    # Watershed boundary (EPSG:4326, GEE-compatible)
-├── metadata/images/                    # Field photos (N/E/S/W) for each station
-├── series/soil/                      # Hourly soil VWC, temperature, EC — all stations
-├── series/atm/                       # Hourly atmospheric data (Jul 2021 – Nov 2025)
-├── series/mesonet/                   # Hourly atmospheric data from the Kansas Mesonet (Jul 2021 - Mar 2026).
-├── series/ndvi/                # Sentinel-2 NDVI time series (point extraction)
-├── series/streamflow/                # USGS gauge 06879650 — 15-min discharge
-├── maps/ndvi/                      # Sentinel-2 NDVI rasters at 10-m resolution (~150 dates)
-├── maps/elevation/                # Elevation, slope, aspect at 10-m resolution (USGS 3DEP)
-└── raw/                       # Original datalogger files (~500 MB, not in repo but available upon request)
+├── metadata/images/                         # Field photos (N/E/S/W) for each station
+├── series/soil/                             # Hourly soil VWC, temperature, EC — all stations
+├── series/atm/                              # Hourly atmospheric data (Jul 2021 – Nov 2025)
+├── series/mesonet/                          # Hourly atmospheric data from the Kansas Mesonet (Jul 2021 - Mar 2026).
+├── series/ndvi/                             # Sentinel-2 NDVI time series (point extraction)
+├── series/streamflow/                       # USGS gauge 06879650 — 15-min discharge
+├── maps/ndvi/                               # Sentinel-2 NDVI rasters at 10-m resolution (~150 dates)
+├── maps/elevation/                          # Elevation, slope, aspect at 10-m resolution (USGS 3DEP)
+└── raw/                                     # Original datalogger files (~500 MB, not in repo but available upon request)
 ```
 
 ---
