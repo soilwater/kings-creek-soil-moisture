@@ -107,10 +107,10 @@
   <!-- HERO -->
   <header>
     <div class="container">
-      <div class="eyebrow">Konza Prairie Biological Station · Manhattan, Kansas</div>
+      <div class="eyebrow">Konza Prairie Biological Station | Manhattan, Kansas</div>
       <h1>Kings Creek Soil Moisture Network</h1>
       <p class="lead">
-        A long-term, multi-depth soil monitoring network within the Kings Creek watershed at
+        A long-term, multi-depth in situ soil monitoring network within the Kings Creek watershed at
         the Konza Prairie Biological Station.
       </p>
       <img src="landing_1.jpg" alt="Monitoring station in Kings Creek watershed, Konza Prairie" class="hero-photo" />
@@ -142,7 +142,7 @@
       </p>
       <p>
         From July 2021 through November 2025, stations also recorded atmospheric variables.
-        Thirteen stations used <strong>Atmos 14 sensors (precipitation, air temperature,
+        Thirteen stations used Atmos 14 sensors (precipitation, air temperature,
         relative humidity); three stations (3, 9, and 16) had Atmos 41 sensors which additionally
         provided solar radiation, wind speed, and wind direction.
       </p>
@@ -152,13 +152,13 @@
         uninterrupted at all 16 stations. Internal logger temperature and atmospheric pressure
         (inside the enclosure) continue to be recorded. Weather data from the
         Kansas Mesonet Ashland Bottoms station is available in
-        <code>mesonet_data/</code>.
+        <code>series/mesonet/</code>.
       </p>
       <p>
         Vegetation data is also provided through Sentinel-2 NDVI at 10-m resolution
         (<code>COPERNICUS/S2_SR_HARMONIZED</code>), retaining only cloud-free dates.
-        Streamflow is available from USGS gauge 06879650 (Kings Creek near
-        Manhattan, KS). Terrain rasters were derived from <code>USGS/3DEP/10m</code>.
+        Streamflow is available from USGS gauge 06879650 (Kings Creek).
+        Terrain rasters were derived from <code>USGS/3DEP/10m</code>.
       </p>
     </div>
   </section>
@@ -173,10 +173,13 @@
         The watershed boundary is a GeoJSON file (EPSG:4326, 2D) compatible with
         Google Earth Engine and standard mapping libraries.
       </p>
+      <p>Data available from July 2021 ·
+         <a href="https://github.com/soilwater/kings-creek-soil-moisture" target="_blank">GitHub</a>
+      </p>
       <table class="data-table">
         <thead>
           <tr>
-            <th>Folder / File</th>
+            <th>Directory</th>
             <th>Contents</th>
             <th>Format</th>
             <th>Coverage</th>
@@ -184,70 +187,64 @@
         </thead>
         <tbody>
           <tr>
-            <td>soil_data/</td>
-            <td>Hourly VWC, soil temperature, and EC at 5, 20 &amp; 40 cm — all 16 stations</td>
-            <td>CSV</td>
-            <td>Jul 2021 – present</td>
-          </tr>
-          <tr>
-            <td>atm_data/</td>
-            <td>Hourly precipitation, air temperature, RH (all stations); solar radiation, wind speed &amp; direction (3 stations with Atmos 41)</td>
-            <td>CSV</td>
-            <td>Jul 2021 – Oct 2025</td>
-          </tr>
-          <tr>
-            <td>mesonet_data/</td>
-            <td>Kansas Mesonet reference stations. Currently includes Ashland Bottoms (hourly precipitation, air temperature, RH, wind speed &amp; direction, solar radiation)</td>
-            <td>CSV</td>
-            <td>Jul 2021 – present</td>
-          </tr>
-          <tr>
-            <td>vegetation_data/</td>
-            <td>Sentinel-2 NDVI time series at each station location (cloud-free dates only)</td>
-            <td>CSV</td>
-            <td>Jul 2021 – present</td>
-          </tr>
-          <tr>
-            <td>ndvi_maps/</td>
-            <td>Sentinel-2 NDVI rasters at 10-m resolution (~150 dates, &lt;5% cloud cover over watershed)</td>
-            <td>GeoTIFF</td>
-            <td>Jul 2021 – present</td>
-          </tr>
-          <tr>
-            <td>streamflow_data/</td>
-            <td>15-min discharge from USGS gauge 06879650 — Kings Creek near Manhattan, KS</td>
-            <td>CSV</td>
-            <td>Jul 2021 – present</td>
-          </tr>
-          <tr>
-            <td>elevations_data/</td>
-            <td>Elevation, slope, and aspect at 10-m resolution (USGS 3DEP)</td>
-            <td>GeoTIFF</td>
-            <td>Static</td>
-          </tr>
-          <tr>
-            <td>images_data/</td>
+            <td>metadata/images/</td>
             <td>Field photos (N/E/S/W) collected during maintenance visits for each station</td>
-            <td>JPG/PNG</td>
-            <td>Various</td>
+            <td>JPG</td>
+            <td>Some field visits</td>
           </tr>
           <tr>
-            <td>raw_data/</td>
-            <td>Original datalogger files (~500 MB). Not included in the GitHub repository.</td>
-            <td>CSV</td>
-            <td>Jul 2021 – present</td>
-          </tr>
-          <tr>
-            <td>stations_metadata.csv</td>
+            <td>metadata/stations.csv</td>
             <td>Station name, coordinates, altitude, watershed, and logger serial number</td>
             <td>CSV</td>
             <td>—</td>
           </tr>
           <tr>
-            <td>kings_creek_boundary.geojson</td>
+            <td>metadata/kings_creek_boundary.geojson</td>
             <td>Watershed boundary polygon (GEE-compatible, EPSG:4326)</td>
             <td>GeoJSON</td>
             <td>—</td>
+          </tr>
+          <tr>
+            <td>series/soil/</td>
+            <td>Hourly VWC, soil temperature, and EC at 5, 20 &amp; 40 cm — all 16 stations</td>
+            <td>CSV</td>
+            <td>Jul 2021 – present</td>
+          </tr>
+          <tr>
+            <td>series/atm/</td>
+            <td>Hourly precipitation, air temperature, RH (all stations); solar radiation, wind speed &amp; direction (3 stations with Atmos 41)</td>
+            <td>CSV</td>
+            <td>Jul 2021 – Oct 2025</td>
+          </tr>
+          <tr>
+            <td>series/mesonet/</td>
+            <td>Kansas Mesonet reference stations. Currently includes Ashland Bottoms (hourly precipitation, air temperature, RH, wind speed &amp; direction, solar radiation)</td>
+            <td>CSV</td>
+            <td>Jul 2021 – present</td>
+          </tr>
+          <tr>
+            <td>series/ndvi/</td>
+            <td>Sentinel-2 NDVI time series at each station location (cloud-free dates only)</td>
+            <td>CSV</td>
+            <td>Jul 2021 – present</td>
+          </tr>
+          <tr>
+            <td>series/streamflow/</td>
+            <td>15-min discharge from USGS gauge 06879650 — Kings Creek near Manhattan, KS</td>
+            <td>CSV</td>
+            <td>Jul 2021 – present</td>
+          </tr>
+          <tr>
+            <td>maps/ndvi/</td>
+            <td>Sentinel-2 NDVI rasters at 10-m resolution (~150 dates, &lt;5% cloud cover over watershed)</td>
+            <td>GeoTIFF</td>
+            <td>Jul 2021 – present</td>
+          </tr>
+          <tr>
+            <td>maps/elevation/</td>
+            <td>Elevation, slope, and aspect at 10-m resolution (USGS 3DEP)</td>
+            <td>GeoTIFF</td>
+            <td>Static</td>
           </tr>
         </tbody>
       </table>
@@ -287,15 +284,21 @@
     </div>
   </section>
 
+    <!-- Support -->
+  <section id="support">
+    <div class="container">
+      <h2>Support</h2>
+      <ul>
+        <li>Multistate hatch project W5188: Soil, Water, and Environmental Physics to Sustain Agriculture and Natural Resources.</li>
+        <li>Kansas State University Agricultural Experiment Station and the Department of Agronomy.</li>
+        <li>Konza Prairie Biological Station.</li>
+      </ul>
+    </div>
+  </section>
+
   <footer>
     <div class="container">
-      <p style="margin: 0%;">Kings Creek Soil Moisture Network</p>
-      <p style="margin: 0%;">Soil Water Processes Lab, Department of Agronomy</p>
-      <p style="margin: 0%;">Konza Prairie Biological Station</p>
-      <p style="margin: 0%;">Kansas State University</p>
-      <p>Data available from July 2021 ·
-         <a href="https://github.com/soilwater/kings-creek-soil-moisture" target="_blank">GitHub</a>
-      </p>
+      <p style="margin: 0%;">Soil Water Processes Lab, Department of Agronomy, Kansas State University</p>
     </div>
   </footer>
 
@@ -328,7 +331,7 @@
     }).addTo(map);
 
     // Load watershed boundary
-    fetch('https://raw.githubusercontent.com/soilwater/kings-creek-soil-moisture/refs/heads/main/kings_creek_boundary.geojson')
+    fetch('https://raw.githubusercontent.com/soilwater/kings-creek-soil-moisture/refs/heads/main/metadata/kings_creek_boundary.geojson')
       .then(r => r.json())
       .then(geojson => {
         L.geoJSON(geojson, {
@@ -352,7 +355,7 @@
 
   <!-- PLOTLY with real data -->
   <script>
-    const BASE_URL = 'https://raw.githubusercontent.com/soilwater/kings-creek-soil-moisture/refs/heads/main/soil_data/';
+    const BASE_URL = 'https://raw.githubusercontent.com/soilwater/kings-creek-soil-moisture/refs/heads/main/series/soil/';
     const DEPTH_COLORS = ['#e05c2e', '#2a7db5', '#2e9e5b'];  // tomato, blue, green
 
     const VARS = {
@@ -424,7 +427,7 @@
         hovermode: 'x unified'
       }, { responsive: true, displayModeBar: false });
 
-      setStatus(`Station ${station} · source: soil_data/station_${station}_soil.csv`);
+      setStatus(`Station ${station} · source: series/soil/station_${station}_soil.csv`);
     }
 
     document.getElementById('station-select').addEventListener('change', render);

@@ -1,0 +1,86 @@
+﻿Configuration,Device Name,Station_06
+,Site Name,Soil Water Lab
+,Serial Number,20893
+,Device Type,192
+,Firmware Version,208
+,Hardware Version,unknown
+,Measurement Interval,3600
+,,
+Software,Software Version,2.14.85
+,,
+Location,Latitude,39.0867405
+,Longitude,-96.5544601
+,Logger Time,2026-03-25 11:26:01.414165+00:00
+,Current Time Zone,UTC+00:00
+,Satellite Vehicles,12
+,GPS Fix Status,5
+,Horizontal Accuracy,871
+,Altitude,439108
+,,
+Cellular Hardware,SIM Number,8944502210209737765
+,Modem Firmware Version,508
+,Modem Type,10
+,,
+Cellular Configuration,Queue Data,1
+,Allow All Upload Hours,1
+,Unrestricted Measurement Interval,0
+,Four Reports per Hour,0
+,Four Reports per Night,0
+,,
+Radio,Power,
+,Channel,
+,Firmware Version,
+,,
+Sensors,Port #,1
+,Name,TEROS 12 Moisture/Temp/EC
+,Serial Number,T12-00092116
+,Meta,0
+,Value,0
+,Status,1
+,Version,300
+,Coefficient,Mineral
+,,
+,Port #,2
+,Name,TEROS 12 Moisture/Temp/EC
+,Serial Number,T12-00092159
+,Meta,0
+,Value,0
+,Status,1
+,Version,300
+,Coefficient,Mineral
+,,
+,Port #,3
+,Name,TEROS 12 Moisture/Temp/EC
+,Serial Number,T12-00053959
+,Meta,0
+,Value,0
+,Status,1
+,Version,114
+,Coefficient,Mineral
+,,
+,Port #,4
+,Name,ATMOS 14 Humidity/Temp/Barometer
+,Serial Number,17459-01-357
+,Meta,63520
+,Value,0
+,Status,0
+,Version,104
+,Coefficient,
+,,
+,Port #,5
+,Name,ECRN-100 Precipitation
+,Serial Number,
+,Meta,0
+,Value,0
+,Status,0
+,Version,0
+,Coefficient,
+,,
+,Port #,6
+,Name,Barometer
+,Serial Number,1619148684
+,Meta,1619148684
+,Value,0
+,Status,1
+,Version,100
+,Coefficient,
