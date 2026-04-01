@@ -328,6 +328,7 @@
     ];
 
     const map = L.map('map').setView([39.092, -96.582], 13);
+    const markerStyle = { radius: 6, fillColor: '#2a6496', color: '#fff', weight: 1.5, opacity: 1, fillOpacity: 0.9 };
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -338,23 +339,21 @@
     fetch('https://raw.githubusercontent.com/soilwater/kings-creek-soil-moisture/refs/heads/main/metadata/kings_creek_boundary.geojson')
       .then(r => r.json())
       .then(geojson => {
-        L.geoJSON(geojson, {
-          style: { color: '#2a6496', weight: 2, fillOpacity: 0.06, fillColor: '#2a6496' }
-        }).addTo(map);
+        L.geoJSON(geojson, {style: { color: '#2a6496', weight: 2, fillOpacity: 0.06, fillColor: '#2a6496' }}).addTo(map);
+
+        stations.forEach(s => {
+          const marker = L.circleMarker([s.lat, s.lon], markerStyle).addTo(map);
+          marker.bindPopup(`
+            <strong>${s.label}</strong><br>
+            <span class="popup-mono">Watershed: ${s.watershed}</span><br>
+            <span class="popup-mono">${s.lat.toFixed(5)}, ${s.lon.toFixed(5)}</span><br>
+            <span class="popup-mono">Altitude: ${s.alt} m</span>
+          `);
+        });
+        
       })
       .catch(() => {}); // silently skip if not yet on GitHub
-
-    const markerStyle = { radius: 6, fillColor: '#2a6496', color: '#fff', weight: 1.5, opacity: 1, fillOpacity: 0.9 };
-
-    stations.forEach(s => {
-      const marker = L.circleMarker([s.lat, s.lon], markerStyle).addTo(map);
-      marker.bindPopup(`
-        <strong>${s.label}</strong><br>
-        <span class="popup-mono">Watershed: ${s.watershed}</span><br>
-        <span class="popup-mono">${s.lat.toFixed(5)}, ${s.lon.toFixed(5)}</span><br>
-        <span class="popup-mono">Altitude: ${s.alt} m</span>
-      `);
-    });
+    
   </script>
 
   <!-- PLOTLY with real data -->
@@ -441,5 +440,3 @@
 
 </body>
 </html>
-
-git filter-branch --index-filter 'git rm --cached --ignore-unmatch raw/download-08430916-855d-4552-ad29-d3f494775e8d.zip' --prune-empty HEAD
